@@ -38,7 +38,7 @@
          (.write out content)
          {:error nil
           :filename (str file-object)
-          :count (count content)})
+          :bytes (count content)})
        (catch Exception e {:error (.getMessage e)
                            :filename (str file-object)
                            :count 0})))
@@ -58,13 +58,13 @@
   (let [content (b64/decode (:content body))
         ini (clojure-ini/read-ini (get-config-file) :keywordize? true)
         file-name (.getName (file (:filename body))) ;; get basename to avoid directory traversal
-        file-object (file (get-in ini [:storage :path]) file-name)
+        file-object (file (get-in ini [:storage :storagedir]) file-name)
         result (save-file file-object content)]
     (if (nil? (:error result))
       (do
         (register-submit ini (:filename result))
         {:status 200
-         :bytes (:count result)
+         :bytes (:bytes result)
          :body "ok"})
       {:status 500
        :bytes 0
@@ -82,10 +82,10 @@
                                           :body {:query {:match {:_id id}}}})]
     (if-let [file-name (get-in response [:body :hits :hits 0 :_source :filename])]
       (let [file-base-name (.getName (file file-name))
-            content (slurp-bytes (str (file (get-in ini [:storage :path]) file-base-name)))]
+            content (slurp-bytes (str (file (get-in ini [:storage :storagedir]) file-base-name)))]
         (if (seq content)
           {:status 200
-           :bytes (:count content)
+           :bytes (count content)
            :body {:filename file-base-name
                   :content (b64/encode content)
                   :encoding "base64"}}
