@@ -6,14 +6,22 @@
             [clojure-ini.core :as clojure-ini]
             [clojure.java.io :refer [file output-stream input-stream copy]]
             [clojure.string :as str]
+            [clojure.tools.cli :refer [parse-opts]]
             [beanstalk-clj.core :refer [with-beanstalkd beanstalkd-factory
                                         put use-tube]]
+            [ring.adapter.jetty :refer :all]
             [ring.middleware.json :as ring-json]))
 
 
 (if-let [ini-file (System/getenv "SCIOAPIINI")]
   (System/setProperty "*scio-api-ini*" ini-file)
   (System/setProperty "*scio-api-ini*" "/etc/scioapi.ini"))
+
+(defn exit
+  "Print message to stderr and exit with exit code"
+  [msg exitcode]
+  (.println *err* msg)
+  (System/exit exitcode))
 
 (defn slurp-bytes
   "Slurp the bytes from a slurpable thing"
@@ -29,7 +37,13 @@
   "read the config file path from the SCIOAPIINI environment path
   or default to /etc/scioapi.ini"
   []
-  (System/getProperty "*scio-api-ini*"))
+  (let [cfg-file (System/getProperty "*scio-api-ini*")]
+    (if (.isFile (file cfg-file))
+      cfg-file
+      (exit (str "\nCoult not find config file: "
+                 cfg-file
+                 "\nconsider to provide the SCIOAPIINI environment variable or use the '-c CONFIGFILE' argument.")
+            1))))
 
 (defn save-file
   ""
@@ -109,4 +123,25 @@
   (-> api-routes
       (ring-json/wrap-json-body {:keywords? true :bigdecimals? true})))
 
+(def cli-options
+  "CLI Options"
+  [["-c" "--config CONFIG" "Config File"
+    :id :config
+    :default (get-config-file)
+    :validate [#(.isFile (file %)) "File not found!"]]
+   ["-h" "--help"]])
+
+
+(defn -main
+  [& args]
+  (let [cli-args (parse-opts args cli-options)
+        options (:options cli-args)
+        errors (:errors cli-args)]
+    (if errors
+      (exit (clojure.string/join ", " errors) 1)
+      (do 
+        (System/setProperty "*scio-api-ini*" (:config options))
+        (let [ini (clojure-ini/read-ini (get-config-file) :keywordize? true)]
+          (run-jetty api
+                     {:port (Integer. (get-in ini [:api :port] 1337))}))))))
 
