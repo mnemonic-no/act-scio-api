@@ -1,6 +1,6 @@
 (defproject scio-api "0.1.0-SNAPSHOT"
   :description "API for uploading and downloading documents"
-  :url "https://github.com/mnemonic-no/scio-api"
+  :url "https://github.com/mnemonic-no/act-scio-api"
   :license {:name "ISC"
             :url "https://opensource.org/licenses/ISC"}
   :dependencies [[org.clojure/clojure "1.10.0"]
