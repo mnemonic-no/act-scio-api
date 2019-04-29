@@ -13,6 +13,8 @@
                  [beanstalk-clj "0.1.3"]
                  [cc.qbits/spandex "0.6.3"]
                  [compojure "1.6.1"]]
+  :profiles {:uberjar {:aot :all
+                       :main scio-api.core}}
   :main ^:skip-aot scio-api.core
   :plugins [[lein-ring "0.12.5"]]
   :ring {:handler scio-api.core/api}

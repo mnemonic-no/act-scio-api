@@ -1,4 +1,5 @@
 (ns scio-api.core
+  (:gen-class)
   (:require [compojure.core :refer :all]
             [compojure.route :as route]
             [scio-api.b64 :as b64]
@@ -127,7 +128,7 @@
   "CLI Options"
   [["-c" "--config CONFIG" "Config File"
     :id :config
-    :default (get-config-file)
+    :default "/etc/scio.ini"
     :validate [#(.isFile (file %)) "File not found!"]]
    ["-h" "--help"]])
 
@@ -143,5 +144,5 @@
         (System/setProperty "*scio-api-ini*" (:config options))
         (let [ini (clojure-ini/read-ini (get-config-file) :keywordize? true)]
           (run-jetty api
-                     {:port (Integer. (get-in ini [:api :port] 1337))}))))))
+                     {:port (Integer. (get-in ini [:api :port] 3000))}))))))
 
