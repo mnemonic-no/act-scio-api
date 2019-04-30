@@ -40,8 +40,9 @@ port = 3000
 *queue*: This is the beanstalk tube shared by scio-api and scio. This is where scio retrieves the filenames
 to scrape for indicators.
 
-*host: The hostname of the beanstalkd service
-*port: The ports running the beanstalkd service
+*host*: The hostname of the beanstalkd service
+
+*port*: The ports running the beanstalkd service
 
 ### [elasticsearch]
 *host*: A list of hosts separated by space. This is the list of *coordinators* in the case of a cluster.
@@ -63,6 +64,7 @@ The data must be a json map with the keys "content" containing the file content 
 ```
 $ curl -H "Content-Type: application/json" -X POST --data '{"content": "MTI3LjAuMC4xCg==", "filename": "testfile.txt"}' http://localhost:3000/submit
 ok⏎
+$
 ```
 
 ### Downloading data
@@ -70,6 +72,7 @@ ok⏎
 ```
 $ curl 'http://localhost:3000?id=77785fc7b151a325a39d2c40a7701cb57736f2ce34b7edbef4e538f42c1509d3'
 {"filename":"testfile.txt","content":"MTI3LjAuMC4xCg==","encoding":"base64"}
+$
 ```
 
 ## License
