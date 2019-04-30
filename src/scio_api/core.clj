@@ -11,7 +11,9 @@
             [beanstalk-clj.core :refer [with-beanstalkd beanstalkd-factory
                                         put use-tube]]
             [ring.adapter.jetty :refer :all]
-            [ring.middleware.json :as ring-json]))
+            [ring.middleware.json :as ring-json]
+            [ring.middleware.keyword-params :refer [wrap-keyword-params]]
+            [ring.middleware.params :refer [wrap-params]]))
 
 
 (if-let [ini-file (System/getenv "SCIOAPIINI")]
@@ -122,7 +124,10 @@
 
 (def api
   (-> api-routes
-      (ring-json/wrap-json-body {:keywords? true :bigdecimals? true})))
+      wrap-keyword-params
+      wrap-params
+      (ring-json/wrap-json-body {:keywords? true :bigdecimals? true})
+      (ring-json/wrap-json-response)))
 
 (def cli-options
   "CLI Options"
