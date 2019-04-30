@@ -23,10 +23,13 @@ You can also override the default location of the .ini file by exporting the SCI
 report bugs to opensource@mnemonic.no
 ```
 
-*example*
+*examples*
 ```
-$ java -jar scio-api-[VERSION]-standalone.jar -c /etc/scio.ini
+$ java -jar scio-api-0.1.0-standalone.jar -c /opt/scio/scio.ini
 ```
+
+```
+$ SCIOAPIINI=/opt/scio/scio.ini java -jar scio-api-0.1.0-standalone.jar
 
 ## Configuration
 
