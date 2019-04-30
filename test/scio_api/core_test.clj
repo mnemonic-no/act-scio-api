@@ -4,7 +4,7 @@
             [ring.mock.request :as mock]))
 
 (deftest test-upload
-  (System/setProperty "*scio-api-ini*" "sample.ini")
+  (System/setProperty "*scio-api-ini*" "etc/sample.ini")
   (is (= {:status 200
           :bytes 4
           :body "ok"
