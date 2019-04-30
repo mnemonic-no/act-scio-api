@@ -13,10 +13,12 @@ $ lein uberjar
 
 ```
 $ java -jar target/scio-api-0.1.0-SNAPSHOT-standalone.jar -h
-Usage: java -jar scio-api-VERSION.jar [-c CONFIGFILE|--config CONFIGFILE]
+Usage: java -jar scio-api-VERSION.jar [OPTION...]
 
 -c, --config=CONFIGFILE      Specify ini location
 -h, --help                   print this text
+
+You can also override the default location of the .ini file by exporting the SCIOAPIINI environment variable.
 
 report bugs to opensource@mnemonic.no
 ```

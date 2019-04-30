@@ -142,9 +142,10 @@
   "Usage summary, Exit after call"
   []
   (do 
-    (println "\nUsage: java -jar scio-api-VERSION.jar [-c CONFIGFILE|--config CONFIGFILE]\n")
+    (println "\nUsage: java -jar scio-api-VERSION.jar [OPTION...]\n")
     (println "-c, --config=CONFIGFILE      Specify ini location")
     (println "-h, --help                   print this text")
+    (println "\nYou can also override the default location of the .ini file by exporting the SCIOAPIINI environment variable.")
     (println "\nreport bugs to opensource@mnemonic.no")
     (System/exit 0)))
 
