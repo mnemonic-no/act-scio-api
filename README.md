@@ -30,6 +30,7 @@ $ java -jar scio-api-0.1.0-standalone.jar -c /opt/scio/scio.ini
 
 ```
 $ SCIOAPIINI=/opt/scio/scio.ini java -jar scio-api-0.1.0-standalone.jar
+```
 
 ## Configuration
 
