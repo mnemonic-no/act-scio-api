@@ -11,6 +11,66 @@ $ lein uberjar
 
 ## Usage
 
+```
+$ java -jar scio-api-[VERSION]-standalone.jar -c /etc/scio.ini
+```
+
+## Configuration
+
+*Consider sharing the .ini file between scio and scio-api*
+
+```
+[beanstalk]
+queue = submit
+host = localhost
+port = 11300
+
+[elasticsearch]
+host = http://localhost:9201 http://localhost:9202
+
+[storage]
+storagedir = /tmp
+
+[api]
+port = 3000
+```
+
+### [beanstalk]
+
+*queue*: This is the beanstalk tube shared by scio-api and scio. This is where scio retrieves the filenames
+to scrape for indicators.
+
+*host: The hostname of the beanstalkd service
+*port: The ports running the beanstalkd service
+
+### [elasticsearch]
+*host*: A list of hosts separated by space. This is the list of *coordinators* in the case of a cluster.
+
+### [storagedir]
+
+*storagedir*: The directory where the submitted documents are stored. This can be the same place as scio stores the documents. *Important: scio must be able to read the files in this directory*
+
+### [api]
+*port*: The port the web API will be litening on.
+
+## Tests using curl to verify everything works
+
+### Submitting data
+
+The Content-Type *MUST* be "application/json"
+The data must be a json map with the keys "content" containing the file content as base64 and "filename" containing the basename of the file.
+
+```
+$ curl -H "Content-Type: application/json" -X POST --data '{"content": "MTI3LjAuMC4xCg==", "filename": "testfile.txt"}' http://localhost:3000/submit
+ok⏎
+```
+
+### Downloading data
+
+```
+$ curl 'http://localhost:3000?id=77785fc7b151a325a39d2c40a7701cb57736f2ce34b7edbef4e538f42c1509d3'
+{"filename":"testfile.txt","content":"MTI3LjAuMC4xCg==","encoding":"base64"}
+```
 
 ## License
 

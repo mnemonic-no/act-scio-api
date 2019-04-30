@@ -72,7 +72,8 @@
   "Handle the submit api call. Write the content to the path specified in the
   storage sectuin in the .ini  file"
   [body]
-  (let [content (b64/decode (:content body))
+  (let [_ (spit "/tmp/a" body)
+        content (b64/decode (:content body))
         ini (clojure-ini/read-ini (get-config-file) :keywordize? true)
         file-name (.getName (file (:filename body))) ;; get basename to avoid directory traversal
         file-object (file (get-in ini [:storage :storagedir]) file-name)
@@ -118,15 +119,15 @@
               :encoding "base64"}})))
 
 (defroutes api-routes
-  (POST "/submit" [:as {body :body}] (handle-submit body))
+  (POST "/submit" {:keys [params]} (handle-submit params))
   (GET "/download" [id] (handle-download id))
   (route/not-found {:body {:error "Page not found"}}))
 
 (def api
   (-> api-routes
       wrap-keyword-params
+      (ring-json/wrap-json-params {:keywords? true :bigdecimals? true})
       wrap-params
-      (ring-json/wrap-json-body {:keywords? true :bigdecimals? true})
       (ring-json/wrap-json-response)))
 
 (def cli-options
