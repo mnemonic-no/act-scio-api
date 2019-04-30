@@ -11,7 +11,7 @@ $ lein uberjar
 
 ## Usage
 
-```
+```bash
 $ java -jar target/scio-api-0.1.0-SNAPSHOT-standalone.jar -h
 Usage: java -jar scio-api-VERSION.jar [OPTION...]
 
@@ -24,11 +24,11 @@ report bugs to opensource@mnemonic.no
 ```
 
 *examples*
-```
+```bash
 $ java -jar scio-api-0.1.0-standalone.jar -c /opt/scio/scio.ini
 ```
 
-```
+```bash
 $ SCIOAPIINI=/opt/scio/scio.ini java -jar scio-api-0.1.0-standalone.jar
 ```
 
@@ -36,7 +36,7 @@ $ SCIOAPIINI=/opt/scio/scio.ini java -jar scio-api-0.1.0-standalone.jar
 
 *Consider sharing the .ini file between scio and scio-api*
 
-```
+```ini
 [beanstalk]
 queue = submit
 host = localhost
@@ -78,7 +78,7 @@ to scrape for indicators.
 The Content-Type *MUST* be "application/json"
 The data must be a json map with the keys "content" containing the file content as base64 and "filename" containing the basename of the file.
 
-```
+```bash
 $ curl -H "Content-Type: application/json" -X POST --data '{"content": "MTI3LjAuMC4xCg==", "filename": "testfile.txt"}' http://localhost:3000/submit
 ok⏎
 $
@@ -86,7 +86,7 @@ $
 
 ### Downloading data
 
-```
+```bash
 $ curl 'http://localhost:3000?id=77785fc7b151a325a39d2c40a7701cb57736f2ce34b7edbef4e538f42c1509d3'
 {"filename":"testfile.txt","content":"MTI3LjAuMC4xCg==","encoding":"base64"}
 $
