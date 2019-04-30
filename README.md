@@ -12,6 +12,17 @@ $ lein uberjar
 ## Usage
 
 ```
+$ java -jar target/scio-api-0.1.0-SNAPSHOT-standalone.jar -h
+Usage: java -jar scio-api-VERSION.jar [-c CONFIGFILE|--config CONFIGFILE]
+
+-c, --config=CONFIGFILE      Specify ini location
+-h, --help                   print this text
+
+report bugs to opensource@mnemonic.no
+```
+
+*example*
+```
 $ java -jar scio-api-[VERSION]-standalone.jar -c /etc/scio.ini
 ```
 
@@ -52,7 +63,7 @@ to scrape for indicators.
 *storagedir*: The directory where the submitted documents are stored. This can be the same place as scio stores the documents. *Important: scio must be able to read the files in this directory*
 
 ### [api]
-*port*: The port the web API will be litening on.
+*port*: The port the web API will be listening on.
 
 ## Tests using curl to verify everything works
 

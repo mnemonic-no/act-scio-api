@@ -138,6 +138,15 @@
     :validate [#(.isFile (file %)) "File not found!"]]
    ["-h" "--help"]])
 
+(defn usage
+  "Usage summary, Exit after call"
+  []
+  (do 
+    (println "\nUsage: java -jar scio-api-VERSION.jar [-c CONFIGFILE|--config CONFIGFILE]\n")
+    (println "-c, --config=CONFIGFILE      Specify ini location")
+    (println "-h, --help                   print this text")
+    (println "\nreport bugs to opensource@mnemonic.no")
+    (System/exit 0)))
 
 (defn -main
   [& args]
@@ -146,7 +155,9 @@
         errors (:errors cli-args)]
     (if errors
       (exit (clojure.string/join ", " errors) 1)
-      (do 
+      (do
+        (when (:help options)
+          (usage))
         (System/setProperty "*scio-api-ini*" (:config options))
         (let [ini (clojure-ini/read-ini (get-config-file) :keywordize? true)]
           (run-jetty api
