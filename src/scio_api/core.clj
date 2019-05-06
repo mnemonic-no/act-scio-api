@@ -8,6 +8,7 @@
             [clojure.java.io :refer [file output-stream input-stream copy]]
             [clojure.string :as str]
             [clojure.tools.cli :refer [parse-opts]]
+            [clojure.tools.logging :as log]
             [beanstalk-clj.core :refer [with-beanstalkd beanstalkd-factory
                                         put use-tube]]
             [ring.adapter.jetty :refer :all]
@@ -34,7 +35,9 @@
       (copy (input-stream (file x)) out)
       (.toByteArray out))
     (catch java.io.FileNotFoundException e
-      [])))
+      (do
+        (log/error (.getMessage e))
+        []))))
 
 (defn get-config-file
   "read the config file path from the SCIOAPIINI environment path
@@ -56,17 +59,26 @@
          {:error nil
           :filename (str file-object)
           :bytes (count content)})
-       (catch Exception e {:error (.getMessage e)
-                           :filename (str file-object)
-                           :count 0})))
+       (catch Exception e
+         (let [msg (.getMessage e)]
+           (log/error msg)
+           {:error msg
+            :filename (str file-object)
+            :count 0}))))
 
 (defn register-submit
   "Register the filename of the saved file to the message queue for consumption by scio"
   [ini filename]
   (let [{:keys [host port queue]} (:beanstalk ini)]
-    (with-beanstalkd (beanstalkd-factory host (Integer. port))
-      (use-tube queue)
-      (put filename))))
+    (try
+      (with-beanstalkd (beanstalkd-factory host (Integer. port))
+        (use-tube queue)
+        (put filename)
+        {:error nil})
+      (catch java.net.ConnectException e
+        (let [msg "Unable to connect to message queue"]
+          (log/error msg)
+          {:error msg})))))
 
 (defn handle-submit
   "Handle the submit api call. Write the content to the path specified in the
@@ -77,46 +89,70 @@
         ini (clojure-ini/read-ini (get-config-file) :keywordize? true)
         file-name (.getName (file (:filename body))) ;; get basename to avoid directory traversal
         file-object (file (get-in ini [:storage :storagedir]) file-name)
-        result (save-file file-object content)]
-    (if (nil? (:error result))
-      (do
-        (register-submit ini (:filename result))
-        {:status 200
-         :bytes (:bytes result)
-         :body "ok"})
+        save-result (save-file file-object content)]
+    (if (nil? (:error save-result))
+      (let [submit-result (register-submit ini (:filename save-result))]
+        (if (nil? (:error submit-result))
+            {:status 200
+             :body save-result}
+            {:status 500
+             :body submit-result}))
       {:status 500
-       :bytes 0
-       :body (:error result)})))
+       :body save-result})))
 
-(defn handle-download
-  ""
+(defn error-404
+  "Return a map with error message"
+  [msg]
+  (do
+    (log/warn msg)
+    {:status 404
+     :bytes 0
+     :body {:error msg
+            :bytes 0
+            :filename nil
+            :content nil
+            :encoding nil}}))
+
+(defn es-lookup-filename
+  "Lookup filename from id in the elastic search cluster"
   [id]
   (let [ini (clojure-ini/read-ini (get-config-file) :keywordize? true)
-        host (get-in ini [:elasticsearch :host])
-        hosts (str/split host #"\s")
-        client (spandex/client {:hosts hosts})
-        response (spandex/request client {:url [:scio :_search]
-                                          :method :get
-                                          :body {:query {:match {:_id id}}}})]
+        hosts (str/split
+               (get-in ini [:elasticsearch :host])
+               #"\s")
+        client (spandex/client {:hosts hosts})]
+    (try
+      (spandex/request client {:url [:scio :_search]
+                               :method :get
+                               :body {:query {:match {:_id id}}}})
+      (catch java.net.ConnectException e
+        (let [msg  "Unable to connect to elastic search"]
+          (log/error msg)
+          {:error msg}))
+      (catch java.lang.Exception e
+        (let [msg (.getMessage e)]
+          (log/error msg)
+          {:error msg})))))
+
+(defn handle-download
+  "Look up id in the elastic search cluster to get local filename, read and return."
+  [id]
+  (let [ini (clojure-ini/read-ini (get-config-file) :keywordize? true)
+        response (es-lookup-filename id)]
     (if-let [file-name (get-in response [:body :hits :hits 0 :_source :filename])]
       (let [file-base-name (.getName (file file-name))
             content (slurp-bytes (str (file (get-in ini [:storage :storagedir]) file-base-name)))]
         (if (seq content)
           {:status 200
-           :bytes (count content)
-           :body {:filename file-base-name
+           :body {:error nil
+                  :bytes (count content)
+                  :filename file-base-name
                   :content (b64/encode content)
                   :encoding "base64"}}
-          {:status 404
-           :bytes 0
-           :body {:filename file-base-name
-                  :content ""
-                  :encoding "base64"}}))
-      {:status 404
-       :bytes 0
-       :body {:filename ""
-              :content ""
-              :encoding "base64"}})))
+          (error-404 (str "Unable to read file " file-base-name))))
+      (error-404 (if-let [msg (:error response)]
+                   msg
+                   (str "ID not found: " id))))))
 
 (defroutes api-routes
   (POST "/submit" {:keys [params]} (handle-submit params))
