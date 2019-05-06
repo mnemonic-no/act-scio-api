@@ -76,7 +76,7 @@
         (put filename)
         {:error nil})
       (catch java.net.ConnectException e
-        (let [msg "Unable to connect to message queueu"]
+        (let [msg "Unable to connect to message queue"]
           (log/error msg)
           {:error msg})))))
 
