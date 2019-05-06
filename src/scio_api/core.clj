@@ -49,7 +49,7 @@
             1))))
 
 (defn save-file
-  ""
+  "Try to save te file to a location. Any errors is returned in the 'error' field of the map"
   [file-object content]
   (try (with-open [out (output-stream file-object)]
          (.write out content)
@@ -61,7 +61,7 @@
                            :count 0})))
 
 (defn register-submit
-  ""
+  "Register the filename of the saved file to the message queue for consumption by scio"
   [ini filename]
   (let [{:keys [host port queue]} (:beanstalk ini)]
     (with-beanstalkd (beanstalkd-factory host (Integer. port))
