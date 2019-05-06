@@ -80,14 +80,14 @@ The data must be a json map with the keys "content" containing the file content 
 
 ```bash
 $ curl -H "Content-Type: application/json" -X POST --data '{"content": "MTI3LjAuMC4xCg==", "filename": "testfile.txt"}' http://localhost:3000/submit
-ok⏎
+{"error":null,"filename":"/tmp/testfile.txt","bytes":10}⏎
 $
 ```
 
 ### Downloading data
 
 ```bash
-$ curl 'http://localhost:3000?id=77785fc7b151a325a39d2c40a7701cb57736f2ce34b7edbef4e538f42c1509d3'
+$ curl 'http://localhost:3000/download?id=77785fc7b151a325a39d2c40a7701cb57736f2ce34b7edbef4e538f42c1509d3'
 {"filename":"testfile.txt","content":"MTI3LjAuMC4xCg==","encoding":"base64"}
 $
 ```
