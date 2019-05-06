@@ -84,8 +84,7 @@
   "Handle the submit api call. Write the content to the path specified in the
   storage sectuin in the .ini  file"
   [body]
-  (let [_ (spit "/tmp/a" body)
-        content (b64/decode (:content body))
+  (let [content (b64/decode (:content body))
         ini (clojure-ini/read-ini (get-config-file) :keywordize? true)
         file-name (.getName (file (:filename body))) ;; get basename to avoid directory traversal
         file-object (file (get-in ini [:storage :storagedir]) file-name)
