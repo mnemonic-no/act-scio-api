@@ -9,6 +9,7 @@
             [clojure.string :as str]
             [clojure.tools.cli :refer [parse-opts]]
             [clojure.tools.logging :as log]
+            [clojure.data.json :as json]
             [beanstalk-clj.core :refer [with-beanstalkd beanstalkd-factory
                                         put use-tube]]
             [ring.adapter.jetty :refer :all]
@@ -73,7 +74,7 @@
     (try
       (with-beanstalkd (beanstalkd-factory host (Integer. port))
         (use-tube queue)
-        (put filename)
+        (put (json/write-str {:filename filename}))
         {:error nil})
       (catch java.net.ConnectException e
         (let [msg "Unable to connect to message queue"]
@@ -176,7 +177,7 @@
 (defn usage
   "Usage summary, Exit after call"
   []
-  (do 
+  (do
     (println "\nUsage: java -jar scio-api-VERSION.jar [OPTION...]\n")
     (println "-c, --config=CONFIGFILE      Specify ini location")
     (println "-h, --help                   print this text")
@@ -198,4 +199,3 @@
         (let [ini (clojure-ini/read-ini (get-config-file) :keywordize? true)]
           (run-jetty api
                      {:port (Integer. (get-in ini [:api :port] 3000))}))))))
-

@@ -1,10 +1,11 @@
-(defproject scio-api "0.1.0-SNAPSHOT"
+(defproject scio-api "0.1.1"
   :description "API for uploading and downloading documents"
   :url "https://github.com/mnemonic-no/act-scio-api"
   :license {:name "ISC"
             :url "https://opensource.org/licenses/ISC"}
   :dependencies [[org.clojure/clojure "1.10.0"]
                  [org.clojure/tools.cli "0.4.2"]
+                 [org.clojure/data.json "0.2.5"]
                  [org.clojure/tools.logging "0.3.1"]
                  [ring/ring-core "1.7.1"]
                  [ring/ring-json "0.4.0"]
