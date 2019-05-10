@@ -14,7 +14,7 @@
   (let [cfg-file (System/getProperty "*scio-api-ini*")]
     (if (.isFile (file cfg-file))
       cfg-file
-      (exit (str "\nCoult not find config file: "
+      (exit (str "\nCould not find config file: "
                  cfg-file
                  "\nconsider to provide the SCIOAPIINI environment variable or use the '-c CONFIGFILE' argument.")
             1))))

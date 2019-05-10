@@ -38,7 +38,7 @@
 
 (defn handle-submit
   "Handle the submit api call. Write the content to the path specified in the
-  storage sectuin in the .ini  file"
+  storage section in the .ini  file"
   [body]
   (let [content (b64/decode (:content body))
         ini (read-ini)

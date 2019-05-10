@@ -41,7 +41,7 @@
       "application/binary")))
 
 (defn save-file
-  "Try to save te file to a location. Any errors is returned in the 'error' field of the map"
+  "Try to save the file to a location. Any errors is returned in the 'error' field of the map"
   [file-object content]
   (try (with-open [out (output-stream file-object)]
          (.write out content)
