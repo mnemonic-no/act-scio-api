@@ -1,4 +1,4 @@
-(defproject scio-api "0.1.1"
+(defproject scio-api "0.1.2"
   :description "API for uploading and downloading documents"
   :url "https://github.com/mnemonic-no/act-scio-api"
   :license {:name "ISC"

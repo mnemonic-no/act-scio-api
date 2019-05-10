@@ -86,9 +86,19 @@ $
 
 ### Downloading data
 
+#### Default behavior (no format parameter)
+
 ```bash
-$ curl 'http://localhost:3000/download?id=77785fc7b151a325a39d2c40a7701cb57736f2ce34b7edbef4e538f42c1509d3'
-{"filename":"testfile.txt","content":"MTI3LjAuMC4xCg==","encoding":"base64"}
+$ curl 'http://localhost:3000/download?id=ee128a27e0f98844713ea51f5ca339803033b35f4df2d764f9c8eb40856a38c3'
+Test og tast
+$
+```
+
+#### With format=json
+
+```bash
+$ curl 'http://localhost:3000/download?id=ee128a27e0f98844713ea51f5ca339803033b35f4df2d764f9c8eb40856a38c3&format=json'
+{"error":null,"bytes":13,"filename":"Infocon_green.html","content":"VGVzdCBvZyB0YXN0Cg==","encoding":"base64"}⏎                                                         ~
 $
 ```
 
