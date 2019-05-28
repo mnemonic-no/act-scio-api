@@ -1,6 +1,5 @@
 (ns scio-api.files
   (:import [java.nio.file Files Paths]
-           [java.net URI]
            [java.io FileNotFoundException ByteArrayOutputStream])
   (:require [clojure.java.io :refer [file output-stream input-stream copy]]
             [clojure.tools.logging :as log]))
@@ -9,11 +8,10 @@
 (defn get-content-type
   "Probe the content type of a file"
   [file-name]
-  (let [content-type (Files/probeContentType
-                      (Paths/get
-                       (URI. (str "file://" file-name))))]
-    (log/warn content-type)
-    content-type))
+  (if-let [content-type (Files/probeContentType
+                         (Paths/get (.toURI (file file-name))))]
+    content-type
+    "application/binary"))
 
 (defn elem-of?
   "True if elm is in coll"
