@@ -1,0 +1,14 @@
+Description=SCIO API service
+
+[Service]
+User=scio
+LimitCORE=0
+ExecStart=/usr/bin/java -Xmx1g -jar /opt/scio/scio-api-latest-standalone.jar -c /opt/scio/etc/scio.ini
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=scio
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
