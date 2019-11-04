@@ -24,12 +24,12 @@
 
 (defn register-submit
   "Register the filename of the saved file to the message queue for consumption by scio"
-  [ini filename]
+  [ini filename body]
   (let [{:keys [host port queue]} (:beanstalk ini)]
     (try
       (with-beanstalkd (beanstalkd-factory host (Integer. port))
         (use-tube queue)
-        (put (json/write-str {:filename filename}))
+        (put (json/write-str (into body {:filename filename})))
         {:error nil})
       (catch java.net.ConnectException e
         (let [msg "Unable to connect to message queue"]
@@ -46,7 +46,7 @@
         file-object (file (get-in ini [:storage :storagedir]) file-name)
         save-result (save-file file-object content)]
     (if (nil? (:error save-result))
-      (let [submit-result (register-submit ini (:filename save-result))]
+      (let [submit-result (register-submit ini (:filename save-result) (dissoc body :content))]
         (if (nil? (:error submit-result))
             {:status 200
              :body save-result}
