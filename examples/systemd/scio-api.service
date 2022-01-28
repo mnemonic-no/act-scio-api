@@ -1,3 +1,4 @@
+[Unit]
 Description=SCIO API service
 
 [Service]
