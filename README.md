@@ -2,6 +2,10 @@
 
 Web API for submitting and retrieving documents from Scio
 
+## DEPRECATED
+
+This reposistory is deprecated. The project is reimplemented in python and development is moved to [https://github.com/mnemonic-no/act-scio2](https://github.com/mnemonic-no/act-scio2).
+
 ## Build
 
 ```
